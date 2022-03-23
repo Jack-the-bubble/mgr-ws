@@ -4,7 +4,7 @@
 import rospy
 
 # LOCAL
-from patrol_map_divider_pkg.PatrolMapDividerROS import PatrolMapDividerROS
+from patrol_map_divider_ros.PatrolMapDividerROS import PatrolMapDividerROS
 
 
 def main():
