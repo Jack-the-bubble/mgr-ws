@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>bringup</name>
+  <name>tiago_startup</name>
   <version>0.0.0</version>
-  <description>The bringup package</description>
+  <description>The tiago_startup package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="tatooine@todo.todo">tatooine</maintainer>
+  <maintainer email="silver@todo.todo">silver</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/bringup</url> -->
+  <!-- <url type="website">http://wiki.ros.org/tiago_startup</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -49,6 +49,11 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>tiago_sim_hospital</build_depend>
+  <build_depend>tiago_sim_integration</build_depend>
+  <build_export_depend>tiago_sim_hospital</build_export_depend>
+  <exec_depend>tiago_sim_hospital</exec_depend>
+  <exec_depend>tiago_sim_integration</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

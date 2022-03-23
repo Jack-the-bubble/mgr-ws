@@ -1,0 +1,56 @@
+play_motion:
+  controllers: [arm_controller, head_controller, torso_controller]
+
+  motions:
+    fast_home:
+      joints: [torso_lift_joint, arm_1_joint,
+      arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint,
+      arm_6_joint, arm_7_joint]
+      points:
+      - positions: [0.15, 0.20, -1.34, -0.20, 1.94, -1.57, 1.37, 0.0]
+        time_from_start: 0.5
+      meta:
+        name: fast_home
+        usage: tiago_sim_hospital
+        description: 'Go home, but fast'
+
+    look_down:
+      joints: [head_1_joint, head_2_joint]
+      points:
+      - positions: [0, -0.5]
+        time_from_start: 1.0
+      meta:
+        name: look_down
+        usage: tiago_sim_hospital
+        description: 'Bow your head forward.'
+
+    look_forward:
+      joints: [head_1_joint, head_2_joint]
+      points:
+      - positions: [0, 0]
+        time_from_start: 1.0
+      meta:
+        name: look_forward
+        usage: tiago_sim_hospital
+        description: 'Look forward.'
+
+    close_gripper:
+      joints: [gripper_left_finger_joint, gripper_right_finger_joint]
+      points:
+      - positions: [0, 0]
+        time_from_start: 1.0
+      meta:
+        name: close_girpper
+        usage: tiago_sim_hospital
+        description: 'Close gripper.'
+
+    open_gripper:
+      joints: [gripper_left_finger_joint, gripper_right_finger_joint]
+      points:
+      - positions: [0.4, 0.4]
+        time_from_start: 1.0
+      meta:
+        name: open_girpper
+        usage: tiago_sim_hospital
+        description: 'Close gripper.'
+

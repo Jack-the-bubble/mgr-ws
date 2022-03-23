@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+import rospy
+
+from tiago_move_interface import TiagoInterface
+
+if __name__ == '__main__':
+    tiago_interface = TiagoInterface.TiagoNode()
+    tiago_interface.move_joints("fast_home")
+    pass
