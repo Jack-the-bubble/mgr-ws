@@ -10,6 +10,8 @@ project(patrol_map_divider)
 find_package(catkin REQUIRED
     rospy
     std_msgs
+    visualization_msgs
+    geometry_msgs
     dynamic_reconfigure
 )
 

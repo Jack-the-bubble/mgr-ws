@@ -4,7 +4,8 @@
     in certain step when scanning a single section
 """
 
+
 class TaskPoint(object):
     def __init__(self):
         self.pose = None  # pose in map coordinates (?) for robot to navigate to
-        self.task_list = []
+        self.name = None

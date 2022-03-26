@@ -31,26 +31,15 @@ class PatrolMapDividerROS(PatrolMapDivider):
         for idx in range(self.SECTION_COUNT):
             section_name = self.section_prefix_ + str(idx)
             point_string_list = [val for key, val in config.items()
-                                         if key.startswith(section_name)]
+                                 if key.startswith(section_name)]
 
-             # weird convention for config object
+            # weird convention for config object
             if not point_string_list:
                 print("No group with name " + section_name)
                 continue
 
-            self.sections_structure[section_name] = self.parsePointsFromGroup(
-                point_string_list)
+            self.updateSectionFromGroup(point_string_list, section_name)
+
+        self.update_robot_status()  # temporary
 
         return config
-
-
-    # def parse_point(self, point_string):
-    #     point_list = re.findall(r'\d+.\d+', point_string)
-    #     if len(point_list) != 2:
-    #         print("Expected 2 digits with decimation point, got ",
-    #               str(point_list))
-    #         return [0.0, 0.0]
-
-    #     point_list = [float(x) for x in point_list]
-
-    #     return MapSectionPoint(*point_list)
