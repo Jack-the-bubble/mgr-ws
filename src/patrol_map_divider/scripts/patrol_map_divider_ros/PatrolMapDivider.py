@@ -7,7 +7,8 @@ import re
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from std_msgs.msg import ColorRGBA
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3, Pose
+from nav_msgs.msg import Odometry
 
 
 # LOCAL
@@ -30,8 +31,7 @@ class PatrolMapDivider(object):
             self.sections_structure[name] = MapSection(name)
 
         self.frame_id = 'map'
-        self.robot_pose = None
-        self.odom_sub = None
+        self.robot_pose = Pose()
         self.current_section = None  # wich section robot is currently in
 
     def getMarkerArray(self):
@@ -47,6 +47,21 @@ class PatrolMapDivider(object):
 
     '''One marker for one section of map'''
     def getSingleMarker(self, section: MapSection):
+        """Create marker for given map section using marker with triangle list.
+
+        Marker is created using section vertices to create triangles
+            that will be drawn e.g. in rviz. Color is decided
+            based on section number, last character MUST be a digit.
+
+        @param section instance to create a marker from
+
+        @return Marker based on given section points
+        """
+
+        colors = [ColorRGBA(1.0, 0.0, 0.0, 0.2),
+                  ColorRGBA(0.0, 1.0, 0.0, 0.2),
+                  ColorRGBA(0.0, 0.0, 1.0, 0.2)]
+        color_idx = int(section.name[-1]) % 3
         point_list = section.point_list
         triangle_count = len(point_list) - 2
         if triangle_count < 1:
@@ -61,10 +76,9 @@ class PatrolMapDivider(object):
         marker.header.stamp = rospy.get_rostime()
         marker.ns = section.name
         marker.id = 0
-        marker.color = ColorRGBA(1.0, 0.0, 0.0, 0.2)
+        marker.color = colors[color_idx]
         marker.scale = Vector3(1.0, 1.0, 1.0)
         marker.pose.orientation.w = 1.0
-        # marker.lifetime = 0  # never delete?
 
         # rearrange points to form triangles as described in
         # http://wiki.ros.org/rviz/DisplayTypes/Marker
@@ -97,6 +111,16 @@ class PatrolMapDivider(object):
 
         self.sections_structure[name].updateVertices(point_list)
 
+    def updateRobotOdom(self, odom: Odometry):
+        """Update current robot odometry data and section it's currently in.
+
+        @param odom odometry data
+        """
+
+        self.robot_pose = odom.pose.pose
+
+        self.findSectionPoseIsIn()
+
     def parsePoint(self, point_string):
         """! Use regex to divide string into point coordinates.
 
@@ -108,7 +132,7 @@ class PatrolMapDivider(object):
         @return An instance of MapSectionPoint initialized
             with parsed 2 values.
         """
-        point_list = re.findall(r'\d+.\d+', point_string)
+        point_list = re.findall(r'-?(?:\d+.\d+)', point_string)
         if len(point_list) != 2:
             print("Expected 2 digits with decimation point, got ",
                   str(point_list))
@@ -147,7 +171,20 @@ class PatrolMapDivider(object):
             updates internal fileds.
         """
 
+        # check last saved section
+        if self.current_section:
+            last_section = self.sections_structure[self.current_section]
+            if last_section.checkPoseInSection(self.robot_pose):
+                return
+
+        # if not found yet or robot moved out of last section, look through all
+        self.current_section = None
         for section in self.sections_structure.values():
             if section.checkPoseInSection(self.robot_pose):
                 self.current_section = section.name
                 break
+
+        if not self.current_section:
+            print("given point {}, {} outside ".format(
+                  self.robot_pose.position.x, self.robot_pose.position.y) +
+                  "of currently defined sections")

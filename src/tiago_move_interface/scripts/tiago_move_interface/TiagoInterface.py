@@ -1,9 +1,11 @@
+#!/usr/bin/env python2.7
+
 # general imports
 import sys
 
 # ros imports
 import actionlib
-from moveit_commander import move_group
+# from moveit_commander import move_group
 import rospy
 from tf.transformations import quaternion_from_euler
 import tf2_ros
@@ -11,8 +13,10 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
-from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal, PlayMotionResult
+from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal, \
+    PlayMotionResult
 from sensor_msgs.msg import JointState
+
 
 class TiagoNode:
     def __init__(self):

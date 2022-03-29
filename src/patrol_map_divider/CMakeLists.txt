@@ -4,15 +4,14 @@ project(patrol_map_divider)
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
 find_package(catkin REQUIRED
     rospy
     std_msgs
     visualization_msgs
     geometry_msgs
+    nav_msgs
     dynamic_reconfigure
+    patrol_map_msgs
 )
 
 ## System dependencies are found with CMake's conventions
