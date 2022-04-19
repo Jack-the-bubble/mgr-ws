@@ -10,7 +10,8 @@ from std_msgs.msg import String
 # LOCAL
 from patrol_map_divider.cfg import PatrolMapDividerConfig
 from patrol_map_divider_ros.PatrolMapDivider import PatrolMapDivider
-from patrol_map_msgs.srv import SectionTasksRequest, SectionTasksResponse
+from patrol_map_msgs.srv import SectionTasks, SectionTasksRequest, \
+    SectionTasksResponse
 
 
 class PatrolMapDividerROS(PatrolMapDivider):

@@ -1,0 +1,10 @@
+<launch>
+    <include file="$(find tiago_interactions)/launch/master.launch"/>
+
+    <include file="$(find tiago_interactions)/launch/client.launch"/>
+
+    <include file="$(find tiago_interactions)/launch/human.launch"/>
+
+    <include file="$(find dialogflow)/launch/websocket.launch"/>
+
+</launch>

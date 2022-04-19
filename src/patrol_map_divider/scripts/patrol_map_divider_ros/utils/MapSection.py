@@ -6,7 +6,9 @@
     and manipulating task poses (just the poses!).
 """
 
+
 # LOCAL
+from asyncio import Task
 from turtle import update
 from geometry_msgs.msg import Pose
 from patrol_map_msgs.msg import TaskPointMsg

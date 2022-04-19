@@ -1,0 +1,4 @@
+patrol_map_msgs/TaskPointMsg tasks_list
+std_msgs/String name
+---
+std_msgs/Bool res
