@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+import rospy
+
+from tiago_task_find_human import find_human_server
+
+if __name__ == '__main__':
+    # rospy.init_node('task_find_human')
+    server = find_human_server.FindHumanActionClass(rospy.get_name())
+    rospy.spin()

@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find pal_person_detector_opencv)/launch/detector.launch">
+        <arg name="image" value="/xtion/rgb/image_raw"/>
+    </include>
+</launch>

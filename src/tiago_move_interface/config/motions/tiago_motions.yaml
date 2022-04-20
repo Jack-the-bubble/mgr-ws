@@ -34,6 +34,16 @@ play_motion:
         usage: tiago_sim_hospital
         description: 'Look forward.'
 
+    look_left:
+      joints: [head_1_joint, head_2_joint]
+      points:
+      - positions: [-0.3, 0]
+        time_from_start: 1.0
+      meta:
+        name: look_left
+        usage: tiago_sim_hospital
+        description: 'Look left.'
+
     close_gripper:
       joints: [gripper_left_finger_joint, gripper_right_finger_joint]
       points:
