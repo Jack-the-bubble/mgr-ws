@@ -1,0 +1,44 @@
+Nic nie robię. 
+Nie rozumiem pytania. 
+Zmieniam wysokość. 
+Jadę do kuchni. 
+Jadę do pokoju.
+Jadę do salonu.
+Jadę do korytarza.
+Jadę do warsztatu.
+Jadę do przejścia.
+Nie wiem gdzie to jest.
+Dojechałem do kuchni.
+Dojechałem do pokoju.
+Dojechałem do salonu.
+Dojechałem do korytarza.
+Dojechałem do warsztatu.
+Dojechałem do przejścia. 
+Podaj mi wodę i potwierdź.
+Podaj mi kawę i potwierdź.
+Podaj mi herbatę i potwierdź.
+Podaj mi mleko i potwierdź.
+Podaj mi piwo i potwierdź.
+Podaj mi kanapkę i potwierdź.
+Podaj mi sok i potwierdź.
+Czekam na położenie wody.
+Czekam na położenie kawy.
+Czekam na położenie herbaty.
+Czekam na położenie mleka.
+Czekam na położenie piwa.
+Czekam na położenie kanapki.
+Czekam na położenie soku.
+Odbierz wodę i potwierdź.
+Odbierz kawę i potwierdź.
+Odbierz herbatę i potwierdź.
+Odbierz mleko i potwierdź.
+Odbierz piwo i potwierdź.
+Odbierz kanapkę i potwierdź.
+Odbierz sok i potwierdź.
+Czekam na odebranie wody.
+Czekam na odebranie kawy.
+Czekam na odebranie herbaty.
+Czekam na odebranie mleka.
+Czekam na odebranie piwa.
+Czekam na odebranie kanapki.
+Czekam na odebranie soku.

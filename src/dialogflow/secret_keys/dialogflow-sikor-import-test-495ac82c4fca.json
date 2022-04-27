@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dialogflow-sikor-import-test",
+  "private_key_id": "495ac82c4fcae5c7e0d61227a4df168736193c6a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCfDG/QLSBEfPE9\nVym5TaXEgdZWE0DRGkxEUngqGHYwpuShKLCd8uMKIbmoGfG9aWguubsA/ujbHoBs\nznnvItoeRzc0BojX7ZToOMGO39vycZBwqk7I+RMErpBzXk+oQUwNtByoIQ+cdLs8\nLMUv3SeBlTKHuF/n6Ae8WgVTaBvlZvyUm4QM2TbgMAtIsHFS3wab7L/tyHXK4MQb\neXrkrpWL6lFojm7+LuvCqOAnO4swvQJxFwOPlXnFU9jw57ilZXMf5rGUFyEBp0Ug\nLDwmdNwO555fyWLQfBJDFw+zC9OmxXxIaN7idNNDGbaNXOAe222sbQ9oFunknnQP\nW7pUzXC7AgMBAAECggEAIEJJAXvNoiaHVY4yx8NgfmlpPD8ec+r2Eht6BOu+OSL4\nl1ll7Ttg4mKxwc81UVoqR+Pi8pJBT4Qxvx/n6mFyxRZjs3kp00X8YFd2ptBvz45K\nIhfg7/FY8qenY8b6uCE6WEMyVsWR4YVpnoxkGE+uXiGRRKbYSPSucPz/PIoOsmnt\nklpC+76wNppTtMGfbnhkjCAQ279Uo6v5lMTLbXUAbJZESK9jdar/qaZJ717u5eAj\no9JWxbUPZmBh2yDKEF9i4/1za+kPEfwG/7gFSG7nCenBhqvpDLgMqya6egpQ9LDq\nzxzDCrjmGswjQ75usBPyhCzRenjtkWpAGlze14WheQKBgQDVDdMtC26kj4p+ycVs\nKRoyhqg5vqH8JIiYAJhgOSmrMW8UVavwKxrxhrvqRibrYdjwHzrVreFjVxAUJAmw\nxBUOa+rp3xJoI60cfWRN8h/TTvHw7iHT++ulbYpA5Ab9CO0uxmshfUWKLmdDToG0\nHtiCPHBjPReKhN5JURIP8iqS0wKBgQC/G8hriRU3b5hXQLIRV7ljZf/Hj/ifKo4c\noC7IEDnMTsckBM2YvIRWbwBaRfE//SGJSvmzkSV5CbVJTUYVVst2e0JdsGgDHogK\nOxcap7CcdcwbsYJHJVqKaX/fe1U+olqeYCvI+tZ3ZRlA4D4bSHYJ1dxOCzFx88xF\nWPAZBUTpeQKBgQDQs3g32ckKfmnGhVRU/XZiJDJKTolS+16qt3qMV7KPth7/pmSF\nIVSFX9xYQ1wAm5rsrUru4iO1MiXX9O1hMNMHi4NUkWXwiXIcRGCrUhEG54Bs6HhO\ntapCJKmXo0eNOt9MQKXU6mfiUk5pSlAX51djTF0zeTbERB+TZkzxPeGibQKBgQCe\nquZ/wdTHrfOBnck59OeKy0jN247EN4S955BvsmkKY+2azhIU2Y/WY1qbmK5wPi31\n2zXuDHhcQd8t+OZTGTjcKgIz3x68WEECnYTVMJzFilfoNjy/7Rd7C5SLa86erhUm\noRo5R2mAv4N0BboK1OKLz++VLF3lClFy0iCl5WYNoQKBgQCYfeW3ffptZ1Ml22vR\ngzR3Oy4B5HjI2FFJSthH+r8s0zZnVFSoyRatL5jKPSftxPM6ORe+o4+H3PpOteZ3\n5K6CzWUx5ci89bajMJOvsB2BHx2MONJdeTWPTSqbBhO4ZZli+OTet5TJ+253zU0z\nawbt0NBVX/zsFmoc+ISinx6gSA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "test-3@dialogflow-sikor-import-test.iam.gserviceaccount.com",
+  "client_id": "100736601365861619209",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test-3%40dialogflow-sikor-import-test.iam.gserviceaccount.com"
+}

@@ -1,0 +1,13 @@
+<launch>
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+  
+  <node pkg="dialogflow" type="talker.py" name="talker" output="screen">
+    <!-- <param name="agent_name" value="incare-dialog-agent" /> -->
+    <param name="agent_name" value="dialogflow-sikor-import-test" />
+    <param name="data_dir" value="$(find dialogflow)/data" />
+  </node>
+
+  <node pkg="dialogflow" type="vad.py" name="vad" args="--keywords 'hey pico' --sensitivities 0.9 --input_audio_device 0" output="screen" />
+  <node name="soundplay_node" pkg="sound_play" type="soundplay_node.py"/>
+
+</launch>

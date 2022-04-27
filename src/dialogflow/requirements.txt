@@ -1,0 +1,3 @@
+google-cloud-speech
+python-Levenshtein
+dialogflow==1.1.1

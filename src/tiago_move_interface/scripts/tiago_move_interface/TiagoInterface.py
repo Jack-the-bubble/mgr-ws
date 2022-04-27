@@ -19,8 +19,8 @@ from sensor_msgs.msg import JointState
 
 
 class TiagoNode:
-    def __init__(self):
-        self.group_name = 'arm_torso'
+    def __init__(self, group_name = 'arm_torso'):
+        self.group_name = group_name
         self.play_ns = 'play_motion'
 
         rospy.init_node('tiago_interface', anonymous=False)

@@ -1,0 +1,40 @@
+nie wiem o co chodzi*sound_732645.wav
+jadę do kuchni*sound_978776.wav
+dojechałem do kuchni*sound_772296.wav
+podaj mi wodę i potwierdź*sound_680417.wav
+jadę do nieznane*sound_262138.wav
+dojechałem do nieznane*sound_470760.wav
+odbierz wodę i potwierdź*sound_783107.wav
+czekam na odebranie wody*sound_779044.wav
+wiozę wodę*sound_471210.wav
+zakończyłem zadanie*sound_462515.wav
+jadę do pokoju*sound_315989.wav
+dojechałem do pokoju*sound_558284.wav
+nic nie wiozę*sound_309274.wav
+jadę do salonu*sound_623920.wav
+dojechałem do salonu*sound_577225.wav
+jadę do warsztatu*sound_312602.wav
+dojechałem do warsztatu*sound_387563.wav
+podaj mi kawę i potwierdź*sound_483893.wav
+odbierz kawę i potwierdź*sound_250035.wav
+jadę do fotela*sound_673951.wav
+dojechałem do fotela*sound_944453.wav
+jadę do ładowarki*sound_80180.wav
+dojechałem do ładowarki*sound_668553.wav
+jadę do słonia*sound_436053.wav
+dojechałem do słonia*sound_674333.wav
+jadę do wojtasa*sound_516780.wav
+dojechałem do wojtasa*sound_355540.wav
+jestem teraz zajęty*sound_700685.wav
+nie słyszę*sound_175066.wav
+nie wiem gdzie jest przedpokój*sound_79435.wav
+podaj mi piwo i potwierdź*sound_829554.wav
+jadę do korytarza*sound_470212.wav
+dojechałem do korytarza*sound_664255.wav
+odbierz piwo i potwierdź*sound_352070.wav
+podaj mi herbatę i potwierdź*sound_974646.wav
+odbierz herbatę i potwierdź*sound_591573.wav
+nie wiem gdzie jest pottera*sound_959948.wav
+czekam na odebranie herbaty*sound_543035.wav
+podaj mi budkę i potwierdź*sound_245864.wav
+odbierz budkę i potwierdź*sound_366888.wav
