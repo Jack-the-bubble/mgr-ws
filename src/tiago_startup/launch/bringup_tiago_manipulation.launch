@@ -2,6 +2,8 @@
 
     <rosparam file="$(find tiago_move_interface)/config/motions/tiago_motions.yaml" command="load"/>
     <!-- simulation with prepared environment and map, any other should also do the trick -->
-    <include file="$(find tiago_sim_hospital)/launch/tiago_manipulation_hospital.launch">
+    <!-- <include file="$(find tiago_sim_hospital)/launch/tiago_manipulation_hospital.launch"> -->
+    <include file="$(find tiago_sim_integration)/launch/tiago_navigation_public_012.launch">
+
     </include>
 </launch>
