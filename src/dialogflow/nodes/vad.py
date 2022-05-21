@@ -74,14 +74,14 @@ def record_to_file(path, data, sample_width, rate):
     "Records from the microphone and outputs the resulting data to 'path'"
     (channel_left, channel_right) = data
     wf = wave.open(path, 'wb')
-    wf.setnchannels(2)
+    wf.setnchannels(1)
     wf.setsampwidth(sample_width)
     wf.setframerate(rate)
     for left, right in itertools.izip(channel_left, channel_right):
         left_frame = pack('<h', left)
         wf.writeframes(left_frame)
-        right_frame = pack('<h', right)
-        wf.writeframes(right_frame)
+        # right_frame = pack('<h', right)
+        # wf.writeframes(right_frame)
     wf.close()
 
 def normalize(snd_data):

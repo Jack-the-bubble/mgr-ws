@@ -1,0 +1,316 @@
+#!/usr/bin/env python
+# encoding: utf8
+
+import rospkg
+import sys
+import subprocess
+import threading
+
+import rosgraph
+import rospy
+import actionlib
+from std_msgs.msg import String
+import tiago_msgs.msg
+from rcprg_smach.ros_node_utils import get_node_names
+from TaskER.TaskHarmoniserAgent import TaskHarmoniserAgent
+
+class TaskSpec:
+    def __init__(self, intent_name, task_name, priority, params_names_list):
+        self.intent_name = intent_name
+        self.task_name = task_name
+        self.priority = priority
+        self.params_names_list = params_names_list
+
+class TaskHarmonizer:
+    def __init__(self, task_harmoniser_agent, intent_topics, tasks_spec_list, cached_rapps_path):
+        self.tasks_spec_list = tasks_spec_list
+        self.checkForDynamicAgentsRunning()
+        self.tha = task_harmoniser_agent
+        self.cant_hear_you = False
+
+        self.sub_list = []
+        for topic_name in intent_topics:
+            self.sub_list.append( rospy.Subscriber(topic_name, tiago_msgs.msg.Command, self.callback) )
+        self.pub_rico_filtered_cmd = rospy.Publisher( '/rico_filtered_cmd', tiago_msgs.msg.Command, queue_size=10 )
+
+        self.pending_task_request = None
+        self.cached_rapps_path = cached_rapps_path
+
+        self.current_subprocess = None
+        self.current_task = None
+        self.current_task_cmd = None
+
+        self.task_request_response = None
+
+        print 'ConversationMachine.__init__: waiting for rico_says ActionServer...'
+        #self.rico_says_client = actionlib.SimpleActionClient('rico_says', tiago_msgs.msg.SaySentenceAction)
+        #self.rico_says_client.wait_for_server()
+        print 'ConversationMachine.__init__: connected to rico_says ActionServer'
+        self._FINISH = False
+        self.debug_file = False
+    def hasTaskSpecByIntent(self, intent_name):
+        for task_spec in self.tasks_spec_list:
+            if task_spec.intent_name == intent_name:
+                return True
+        return False
+
+    def getTaskSpecByIntent(self, intent_name):
+        for task_spec in self.tasks_spec_list:
+            if task_spec.intent_name == intent_name:
+                return task_spec
+        raise Exception('Could not find task spec for intent "' + intent_name + '"')
+
+    def getTaskSpecByName(self, task_name):
+        for task_spec in self.tasks_spec_list:
+            if task_spec.task_name == task_name:
+                return task_spec
+        raise Exception('Could not find task spec for task_name "' + intent_name + '"')
+
+    def callback(self, data):
+        param_dict = {}
+        for param_name, param_value in zip(data.param_names, data.param_values):
+            param_dict[param_name] = param_value
+            print 'param_name, param_value', param_name, param_value
+
+        task = None
+        print u'data.intent_name: "{}"'.format(data.intent_name)
+        if data.intent_name == '':
+            self.cant_hear_you = True
+        elif self.hasTaskSpecByIntent(data.intent_name):
+            task_spec = self.getTaskSpecByIntent(data.intent_name)
+            if not self.pending_task_request is None:
+                print 'ERROR: pending task request "' + str(self.pending_task_request[0]) + '" was not consumed an ne intent for task "' + task_spec.task_name + '" arrived'
+            task_param_map = {}
+            for param_name in task_spec.params_names_list:
+                if not param_name in param_dict:
+                    print 'ERROR: parameter "' + param_name + '" is missing in intent for task "' + task_spec.task_name + '"'
+                task_param_map[param_name] = param_dict[param_name]
+            self.pending_task_request = (task_spec, task_param_map)
+        else:
+            print 'Passing forward intent ' + data.intent_name
+            self.pub_rico_filtered_cmd.publish( data )
+
+    def spin(self):
+        try:
+            while not rospy.is_shutdown():
+                queue = self.tha.getQueue()
+                [interrupting, executing] = self.tha.getInterruptingAndExecuting()
+                if not self.pending_task_request is None:
+                    if True:
+                        self.runTask( self.pending_task_request[0], self.pending_task_request[1] )
+                        self.pending_task_request = None
+                    else:
+                        print 'Cannot run task "' + self.pending_task_request[0].task_name + '"'
+                        goal = tiago_msgs.msg.SaySentenceGoal()
+                        goal.sentence = 'niekorzystne warunki pogodowe jestem teraz zajęty'
+                        print(goal)
+                        #self.rico_says_client.wait_for_result()
+                elif len(queue) == 0 and self.tha.isExecuting() != True and self.tha.isInterrupting() != True:
+                    print "len(queue): ", len(queue)
+                    print "self.tha.isExecuting", self.tha.isExecuting()
+                    print "self.tha.isInterrupting", self.tha.isInterrupting()
+                    # There is nothing running, so run the default behaviour
+                    default_task_spec = self.getTaskSpecByIntent('default')
+                    self.pending_task_request = (default_task_spec, {})
+                if self.cant_hear_you:
+                    goal = tiago_msgs.msg.SaySentenceGoal()
+                    goal.sentence = 'niekorzystne warunki pogodowe nie słyszę'
+                    print(goal)
+                    self.cant_hear_you = False
+                rospy.sleep(0.5)
+        except Exception as e:
+            print 'Detected exception in THA spin'
+            print e
+            self.tha.shutdown()
+            self._FINISH = True
+
+    def abortCurrentTask(self):
+        if self.current_subprocess is None:
+            return
+
+        # Send a gentle request
+        self.current_task_cmd.publish('abort')
+
+        time1 = rospy.get_rostime()
+        while not rospy.is_shutdown():
+            if self.current_subprocess is None:
+                break
+
+            if not self.current_subprocess.poll() is None:
+                print 'Task "' + self.current_task[0].task_name + '" has finished'
+                break
+
+            time2 = rospy.get_rostime()
+            if (time2-time1).to_sec() > 5.0:
+                self.current_subprocess.kill()
+                print 'Task "' + self.current_task[0].task_name + '" was killed'
+                break
+
+        self.current_subprocess = None
+        self.current_task = None
+        self.current_task_cmd = None
+
+    def canRunTask(self, task_spec):
+        return task_spec.priority > self.current_task[0].priority
+        return self.current_task is None or task_spec.priority > self.current_task[0].priority
+
+    def runTask(self, task_spec, task_parameters):
+        self.checkForDynamicAgentsRunning()
+        print 'Running task "' + task_spec.task_name + '", parameters: ' + str(task_parameters)
+        executable = self.cached_rapps_path + '/' + task_spec.task_name
+        args=[]
+        for param_name, param_value in task_parameters.iteritems():
+            args.append( param_name )
+            args.append( param_value ) 
+        self.shdl_performed = False
+        while not self.shdl_performed ==True:
+            rospy.sleep(0.1)
+        [interrupting, executing] = self.tha.getInterruptingAndExecuting()
+        if task_spec.task_name == 'stop':
+            if self.tha.isExecuting():
+                self.tha.suspendDA(set_exemplary_susp_task=False)
+            else:
+                pass
+        else:
+            da_id = self.tha.getNextID()
+            self.tha.initialiseDA(executable=executable, da_type=task_spec.task_name,  da_id=da_id, args=args)
+            #self.current_subprocess = subprocess.Popen( args )
+            if self.tha.isExecuting():
+                if da_id == executing["da_id"]:
+                    print "The requested task is running"
+                    return
+            if self.tha.isInterrupting():
+                if da_id == interrupting["da_id"]:
+                    print "The requested task interrupts the running behaviour"
+                else:
+                    print "Another task awaits as interrupting agent"
+                    print "The requested task awaits in the queue"
+            else:
+                print "The requested task awaits in the queue"
+        # rospy.sleep(0.1)
+
+    def checkForDynamicAgentsRunning(self):
+        active_ros_nodes = get_node_names()
+        for task_spec in self.tasks_spec_list:
+            for node_name in active_ros_nodes:
+                if '/' + task_spec.task_name == node_name:
+                    #raise Exception('There are some dynamic agents running out there...\n' + str(active_ros_nodes))
+                    pass
+    def scheduler(self):
+        if self.debug_file:
+            cost_file = open("./TH_cost", "a+")
+        else:
+            cost_file =None
+        try:
+            while not rospy.is_shutdown():
+                # print "\n SCHEDULING \n"
+                self.tha.schedule_new(cost_file)
+                self.shdl_performed=True
+                # print "\n SCHEDULED \n"
+                rospy.sleep(2)
+                if self._FINISH:
+                    switch_priority = "hard"
+                    self.tha.sendIndicator(switch_priority)
+                    if self.debug_file ==True:
+                        cost_file.close()
+                    break
+        except Exception as e:
+            print 'Detected exception in THA scheduler'
+            print e
+            if self.debug_file ==True:
+                cost_file.close()
+            self.tha.shutdown()
+            self._FINISH = True
+
+    def switcher(self):
+        try:
+            while not rospy.is_shutdown():
+                print "\n TH NODE - switcher \n"
+                rospy.sleep(0.1)
+                self.tha.switchDA()
+                if self._FINISH:
+                    break
+        except Exception as e:
+            print 'Detected exception in THA switcher'
+            print e
+            self._FINISH = True
+def shdl_function():
+    pass
+def main():
+    rospy.init_node('rico_task_harmonizer')
+    rospy.sleep(0.5)
+
+    print 'Currently running nodes:'
+    print get_node_names()
+    tha = TaskHarmoniserAgent()
+    # TODO: read map of intents to tasks from file downloaded from cloud (RAPP Store)
+    # intent_name -> (task_name, task_param_names)
+    tasks_spec_list = [
+        TaskSpec('projects/incare-dialog-agent/agent/intents/176ab2ca-6250-4227-985b-cc82d5497d9f', 'bring_goods_tasker',5, ['przedmiot']),
+        TaskSpec('BG', 'bring_goods_tasker', 5, ['przedmiot']),
+        TaskSpec('GH', 'guide_human_tasker', 5, ['human_name', 'guide_destination']),
+        TaskSpec('HF', 'human_fell_tasker', 9, ['human_name']),
+        TaskSpec('BJ', 'bring_jar_tasker', 5, ['object_container','bring_destination','end_pose']),
+        TaskSpec('MT', 'move_to_tasker_old', 5, ['miejsce']),
+        TaskSpec('PT', 'patrol_tasker', 5, ['miejsce']),
+        TaskSpec('projects/incare-dialog-agent/agent/intents/0165eceb-9621-4a7d-aecc-7a879951da18', 'move_to_tasker', 5, ['miejsce']),
+        TaskSpec('projects/incare-dialog-agent/agent/intents/7acd4325-4cdd-4e15-99be-ad545f4dddd5', 'stop', 10, []),
+        TaskSpec('projects/incare-dialog-agent/agent/intents/d9e96166-030b-442f-a513-d3fa2e044030', 'wander', 5, []),
+        TaskSpec('intent_call', 'call', 1, ['miejsce']),
+        TaskSpec('default', 'idle_tasker', float('-inf'), []),
+        # TESTS:
+        TaskSpec('test_bring_goods', 'test_bring_goods', 0, ['przedmiot']),
+        TaskSpec('test_move_to', 'test_move_to', 0, ['miejsce']),
+        TaskSpec('test_stop', 'stop', 10, []),
+        TaskSpec('test_wander', 'test_wander', 0, []),
+    ]
+
+    rospack = rospkg.RosPack()
+    cached_rapps_path = rospack.get_path('rcprg_smach') + '/nodes'
+    th = TaskHarmonizer(tha, ['rico_cmd'], tasks_spec_list, cached_rapps_path)
+    scheduler = threading.Thread(target = th.scheduler)
+    scheduler.start()
+    switcher = threading.Thread(target = th.switcher)
+    switcher.start()
+    th.spin()
+    print "SPIIIINEED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    switcher.join()
+    print "switcher!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    scheduler.join()
+    print "scheduler!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    tha.close()
+    del tha
+    print "tha!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+if __name__ == '__main__':
+    main()
+
+'''
+Running the tests:
+rostopic pub /rico_cmd tiago_msgs/Command "query_text: 'wander'
+intent_name: 'test_wander'
+param_names: ['']
+param_values: ['']
+confidence: 0.0
+response_text: ''"
+
+rostopic pub /rico_cmd tiago_msgs/Command "query_text: 'stop'
+intent_name: 'test_stop'
+param_names: ['']
+param_values: ['']
+confidence: 0.0
+response_text: ''"
+
+rostopic pub /rico_cmd tiago_msgs/Command "query_text: 'move_to'
+intent_name: 'test_move_to'
+param_names: ['miejsce']
+param_values: ['kuchnia']
+confidence: 0.0
+response_text: ''"
+
+rostopic pub /rico_cmd tiago_msgs/Command "query_text: 'bring_goods'
+intent_name: 'test_bring_goods'
+param_names: ['przedmiot']
+param_values: ['kawa']
+confidence: 0.0
+response_text: ''"
+'''
